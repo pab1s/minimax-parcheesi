@@ -215,11 +215,11 @@ double AIPlayer::Poda_AlfaBeta(const Parchis &actual, int jugador, int profundid
     } else {
         while (!(actual == sucesor)) {
             if (jugador == jugador_actual) {
-                int prev_alpha = alpha;
+                double prev_alpha = alpha;
 
                 alpha = max(alpha, Poda_AlfaBeta(sucesor, jugador, profundidad + 1, profundidad_max, last_c_piece, last_id_piece, last_dice, alpha, beta, heuristic));
                 
-                if (alpha != prev_alpha and profundidad == 0) {
+                if ((alpha != prev_alpha and profundidad == 0)) {
                     /*c_piece = get<0>(sucesor.getLastAction());
                     id_piece = get<1>(sucesor.getLastAction());
                     dice = get<2>(sucesor.getLastAction());*/
@@ -229,16 +229,14 @@ double AIPlayer::Poda_AlfaBeta(const Parchis &actual, int jugador, int profundid
                 }
 
                 if (alpha >= beta) {
-                    //return beta;
-                    break;
+                    return beta;
                 }
 
             } else {
                 beta = min(beta, Poda_AlfaBeta(sucesor, jugador, profundidad + 1, profundidad_max, last_c_piece, last_id_piece, last_dice, alpha, beta, heuristic));
                 
                 if (beta <= alpha) {
-                    //return alpha;
-                    break;
+                    return alpha;
                 }
             }
             sucesor = actual.generateNextMoveDescending(last_c_piece, last_id_piece, last_dice);
