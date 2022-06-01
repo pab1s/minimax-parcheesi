@@ -73,7 +73,7 @@ class AIPlayer : public Player {
      * @return double
      */
     static double ValoracionTest(const Parchis &estado, int jugador);
-
+    static double MiHeur(const Parchis &estado, int jugador);
     /**
      * @brief 
      * 

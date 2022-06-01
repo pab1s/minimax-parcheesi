@@ -42,16 +42,18 @@ void AIPlayer::think(color &c_piece, int &id_piece, int &dice) const {
            beta = masinf;  // Cotas iniciales de la poda AlfaBeta
     // Llamada a la función para la poda (los parámetros son solo una
     // sugerencia, se pueden modificar).
+    /*
     valor = Poda_AlfaBeta(*actual, jugador, 0, PROFUNDIDAD_ALFABETA, c_piece,
                           id_piece, dice, alpha, beta, ValoracionTest);
     cout << "Valor MiniMax: " << valor << "  Accion: " << str(c_piece) << " "
          << id_piece << " " << dice << endl;
+    */
 
     // ----------------------------------------------------------------- //
 
     // Si quiero poder manejar varias heurísticas, puedo usar la variable id del
     // agente para usar una u otra.
-    /*
+    
     switch (id) {
         case 0:
             valor = Poda_AlfaBeta(*actual, jugador, 0, PROFUNDIDAD_ALFABETA,
@@ -61,18 +63,13 @@ void AIPlayer::think(color &c_piece, int &id_piece, int &dice) const {
         case 1:
             valor = Poda_AlfaBeta(*actual, jugador, 0, PROFUNDIDAD_ALFABETA,
                                   c_piece, id_piece, dice, alpha, beta,
-                                  MiValoracion1);
-            break;
-        case 2:
-            valor = Poda_AlfaBeta(*actual, jugador, 0, PROFUNDIDAD_ALFABETA,
-                                  c_piece, id_piece, dice, alpha, beta,
-                                  MiValoracion2);
+                                  MiHeur);
             break;
     }
     
     cout << "Valor MiniMax: " << valor << "  Accion: " << str(c_piece) << " "
          << id_piece << " " << dice << endl;
-    */
+    
 }
 
 void AIPlayer::thinkRandom(color &c_piece, int &id_piece, int &dice) const {
@@ -192,6 +189,70 @@ double AIPlayer::ValoracionTest(const Parchis &estado, int jugador) {
                     // o meta.
                     puntuacion_oponente++;
                 } else if (estado.getBoard().getPiece(c, j).type == goal) {
+                    puntuacion_oponente += 5;
+                }
+            }
+        }
+
+        // Devuelvo la puntuación de mi jugador menos la puntuación del
+        // oponente.
+        return puntuacion_jugador - puntuacion_oponente;
+    }
+}
+
+double AIPlayer::MiHeur(const Parchis &estado, int jugador) {
+    // Heurística de prueba proporcionada para validar el funcionamiento del
+    // algoritmo de búsqueda.
+
+    int ganador = estado.getWinner();
+    int oponente = (jugador + 1) % 2;
+
+    // Si hay un ganador, devuelvo más/menos infinito, según si he ganado yo o
+    // el oponente.
+    if (ganador == jugador) {
+        return gana;
+    } else if (ganador == oponente) {
+        return pierde;
+    } else {
+        // Colores que juega mi jugador y colores del oponente
+        vector<color> my_colors = estado.getPlayerColors(jugador);
+        vector<color> op_colors = estado.getPlayerColors(oponente);
+
+        // Recorro todas las fichas de mi jugador
+        int puntuacion_jugador = 0;
+        // Recorro colores de mi jugador.
+        for (int i = 0; i < my_colors.size(); i++) {
+            color c = my_colors[i];
+            // Recorro las fichas de ese color.
+            for (int j = 0; j < num_pieces; j++) {
+                // Valoro positivamente que la ficha esté en casilla segura o
+                // meta.
+                if (estado.isSafePiece(c, j) or estado.isWall(estado.getBoard().getPiece(c, j)) == c) {
+                    puntuacion_jugador+= 1;
+                }
+                if (estado.isEatingMove()) {
+                    puntuacion_jugador+= 2;
+                }
+                if (estado.getBoard().getPiece(c, j).type == goal) {
+                    puntuacion_jugador += 5;
+                }
+            }
+        }
+
+        // Recorro todas las fichas del oponente
+        int puntuacion_oponente = 0;
+        // Recorro colores del oponente.
+        for (int i = 0; i < op_colors.size(); i++) {
+            color c = op_colors[i];
+            // Recorro las fichas de ese color.
+            for (int j = 0; j < num_pieces; j++) {
+                if (estado.isSafePiece(c, j) or estado.isWall(estado.getBoard().getPiece(c, j)) == c) {
+                    puntuacion_oponente+= 1;
+                }
+                if (estado.isEatingMove()) {
+                    puntuacion_oponente+= 2;
+                }
+                if (estado.getBoard().getPiece(c, j).type == goal) {
                     puntuacion_oponente += 5;
                 }
             }
