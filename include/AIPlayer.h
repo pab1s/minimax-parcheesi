@@ -73,13 +73,30 @@ class AIPlayer : public Player {
      * @return double
      */
     static double ValoracionTest(const Parchis &estado, int jugador);
-    static double HeurCompleta(const Parchis &estado, int jugador);
-    static double HeurSimple(const Parchis &estado, int jugador);
+
     /**
-     * @brief 
+     * @brief Heurística implementada para derrotar a los 3 ninjas. 
      * 
-     * La propuesta es solo sugerencia, los parámetros de la declaración podrían
-     * variar.
+     * @param estado Instancia de Parchis con el estado actual de la partida.
+     * @param jugador Id del jugador actual (0 o 1)
+     * @return double 
+     */
+    static double HeurCompleta(const Parchis &estado, int jugador);
+
+    /**
+     * @brief Heurística implementada para derrotar a los 3 ninjas teniendo en  
+     * cuenta lo mínimo posible.
+     * 
+     * @param estado Instancia de Parchis con el estado actual de la partida.
+     * @param jugador Id del jugador actual (0 o 1)
+     * @return double 
+     */
+    static double HeurSimple(const Parchis &estado, int jugador);
+
+    /**
+     * @brief Implementación del algoritmo Minimax optimizado con la poda alfa-beta.
+     * 
+     * @return double valor minimax de la poda alfa-beta
      */
     double Poda_AlfaBeta(const Parchis &actual, int jugador, int profundidad,
                          int profundidad_max, color &c_piece, int &id_piece,
